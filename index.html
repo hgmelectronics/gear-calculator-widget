@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gear Speed Calculator</title>
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+
+    <h1>Vehicle Speed Calculator</h1>
+
+    <div class="input-section">
+        <div class="unit-selector">
+            <label>Units:</label>
+            <label>
+                <input type="radio" name="unitSystem" value="imperial" checked> Imperial (MPH, inches)
+            </label>
+            <label>
+                <input type="radio" name="unitSystem" value="metric"> Metric (KPH, mm)
+            </label>
+        </div>
+
+        <label for="transmissionSelect">Transmission:</label>
+        <select id="transmissionSelect">
+            <option value="">-- Select Transmission --</option>
+            </select>
+
+        <label for="finalDrive">Final Drive Ratio:</label>
+        <input type="number" id="finalDrive" value="3.73" step="0.01">
+
+        <label for="tireSize">Tire Size (e.g., 225/60R16):</label>
+        <input type="text" id="tireSize" value="225/60R16" placeholder="WWW/AA R DD">
+
+        <button id="calculateButton">Calculate Speeds</button>
+    </div>
+
+    <div class="output-section">
+        <h2>Results - Vehicle Speed (<span id="speedUnitLabel">MPH</span>)</h2>
+        <p id="tireInfo"></p> <table id="resultsTable">
+            <thead>
+                </thead>
+            <tbody>
+                </tbody>
+        </table>
+        <p id="errorMessage" class="error"></p>
+    </div>
+
+    <script src="calculator.js"></script> </body>
+</html>
