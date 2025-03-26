@@ -69,14 +69,14 @@ const MM_PER_INCH = 25.4;
 const INCHES_PER_MILE = 63360;
 const MM_PER_KM = 1000000;
 const RPM_START = 1000;
-const RPM_END = 8000; // Adjust max RPM if needed
+const RPM_END = 8000;
 const RPM_STEP = 500;
 
 // --- DOM Elements ---
 const transmissionSelect = document.getElementById('transmissionSelect');
 const finalDriveInput = document.getElementById('finalDrive');
 const tireSizeInput = document.getElementById('tireSize');
-const calculateButton = document.getElementById('calculateButton');
+// Removed calculateButton reference
 const resultsTable = document.getElementById('resultsTable');
 const resultsTableHead = resultsTable.querySelector('thead');
 const resultsTableBody = resultsTable.querySelector('tbody');
@@ -91,11 +91,9 @@ let currentUnitSystem = 'imperial';
 // --- Functions ---
 
 function populateTransmissionDropdown() {
-    // Clear existing options except the placeholder
     while (transmissionSelect.options.length > 1) {
         transmissionSelect.remove(1);
     }
-    // Sort keys alphabetically for consistent order
     const sortedKeys = Object.keys(transmissions).sort();
     sortedKeys.forEach(key => {
         const option = document.createElement('option');
@@ -121,7 +119,7 @@ function calculateTireDimensions(tireComponents) {
     if (!tireComponents) return null;
     const { width, aspectRatio, rimDiameter } = tireComponents;
     if (isNaN(width) || isNaN(aspectRatio) || isNaN(rimDiameter) || width <= 0 || aspectRatio <= 0 || rimDiameter <= 0) {
-      return null; // Basic validation for tire components
+      return null;
     }
     const sidewallHeightMm = width * aspectRatio;
     const diameterMm = (sidewallHeightMm * 2) + (rimDiameter * MM_PER_INCH);
@@ -130,7 +128,7 @@ function calculateTireDimensions(tireComponents) {
     const diameterInches = (sidewallHeightInches * 2) + rimDiameter;
     const circumferenceInches = diameterInches * Math.PI;
     if (isNaN(diameterInches) || isNaN(circumferenceInches) || isNaN(diameterMm) || isNaN(circumferenceMm)) {
-        return null; // Check if calculations resulted in NaN
+        return null;
     }
     return { diameterInches, circumferenceInches, diameterMm, circumferenceMm };
 }
@@ -139,21 +137,24 @@ function updateUnitSystem() {
     const selectedRadio = document.querySelector('input[name="unitSystem"]:checked');
     if (selectedRadio) {
         currentUnitSystem = selectedRadio.value;
-        calculateAndDisplaySpeeds(); // Recalculate when units change
+        calculateAndDisplaySpeeds();
     }
 }
 
 function calculateAndDisplaySpeeds() {
+    // Clear previous results and update labels
     resultsTableHead.innerHTML = '';
     resultsTableBody.innerHTML = '';
     tireInfoDisplay.textContent = '';
     errorMessageDisplay.textContent = '';
     speedUnitLabel.textContent = currentUnitSystem === 'metric' ? 'KPH' : 'MPH';
 
+    // Get current input values
     const selectedTransmissionName = transmissionSelect.value;
     const finalDriveRatio = parseFloat(finalDriveInput.value);
     const tireSizeStr = tireSizeInput.value;
 
+    // Validate inputs
     let errorMessages = [];
     if (!selectedTransmissionName) errorMessages.push("Please select a transmission.");
     if (isNaN(finalDriveRatio) || finalDriveRatio <= 0) errorMessages.push("Invalid Final Drive Ratio.");
@@ -161,7 +162,7 @@ function calculateAndDisplaySpeeds() {
     if (!tireComponents) errorMessages.push("Invalid Tire Size format (e.g., 225/60R16).");
 
     const tireDimensions = calculateTireDimensions(tireComponents);
-    if (!tireDimensions && tireComponents) { // Only error if parsing was okay but calculation failed
+     if (!tireDimensions && tireComponents) {
         errorMessages.push("Invalid tire dimensions resulted from calculation.");
     } else if (tireDimensions) {
         if (currentUnitSystem === 'metric') {
@@ -169,30 +170,22 @@ function calculateAndDisplaySpeeds() {
         } else {
             tireInfoDisplay.textContent = `Tire Diameter: ${tireDimensions.diameterInches.toFixed(2)} inches, Circumference: ${tireDimensions.circumferenceInches.toFixed(2)} inches.`;
         }
-    } else if (!tireDimensions && !tireComponents) {
-         // If parsing failed, tireDimensions is null, avoid adding a duplicate error implicitly
-         // The parsing error message is already in the array if needed.
-    }
-
+    } // No else needed if !tireDimensions && !tireComponents, parsing error captured earlier
 
     const gearRatios = transmissions[selectedTransmissionName];
     if (!gearRatios || gearRatios.length === 0) {
         if (selectedTransmissionName) {
             errorMessages.push("Selected transmission data is missing or invalid.");
         }
-        // Don't proceed if no gears, even if other inputs are valid
-         if (errorMessages.length === 0 && !selectedTransmissionName) {
-           // If the *only* issue is no selection, the first error message handles it.
-         } else {
-            errorMessageDisplay.textContent = errorMessages.join(' ');
-            return;
-         }
+        // Stop if no gears, preventing header build without data
+        errorMessageDisplay.textContent = errorMessages.join(' ');
+         return;
     }
 
-    // Show errors and stop if any validation failed up to this point
+    // Show errors and stop if validation failed before table build
     if (errorMessages.length > 0) {
         errorMessageDisplay.textContent = errorMessages.join(' ');
-        return; // Stop calculation if fundamental inputs are bad
+        return;
     }
 
     // --- Build Table Header (thead) ---
@@ -215,12 +208,12 @@ function calculateAndDisplaySpeeds() {
 
         gearRatios.forEach((gearRatio) => {
             const speedCell = bodyRow.insertCell();
+            // Check for valid inputs needed for calculation *inside the loop*
             if (gearRatio <= 0 || finalDriveRatio <= 0 || !tireDimensions) {
                 speedCell.textContent = '-';
                 speedCell.style.textAlign = 'center';
             } else {
                 const wheelRpm = currentRpm / gearRatio / finalDriveRatio;
-
                 let displaySpeed;
                 if (currentUnitSystem === 'metric') {
                     const speedKph = (wheelRpm * tireDimensions.circumferenceMm * 60) / MM_PER_KM;
@@ -229,7 +222,7 @@ function calculateAndDisplaySpeeds() {
                     const speedMph = (wheelRpm * tireDimensions.circumferenceInches * 60) / INCHES_PER_MILE;
                     displaySpeed = isNaN(speedMph) ? '-' : speedMph.toFixed(1);
                 }
-                 if(displaySpeed === '-'){
+                if(displaySpeed === '-'){
                     speedCell.style.textAlign = 'center';
                  }
                 speedCell.textContent = displaySpeed;
@@ -241,25 +234,21 @@ function calculateAndDisplaySpeeds() {
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
     populateTransmissionDropdown();
-    updateUnitSystem(); // Set initial unit system state and perform initial calculation
+    updateUnitSystem(); // Set initial state and perform initial calculation
 
-    // Add event listeners
-    calculateButton.addEventListener('click', calculateAndDisplaySpeeds);
+    // Add event listeners to recalculate on change
     unitSystemRadios.forEach(radio => radio.addEventListener('change', updateUnitSystem));
     transmissionSelect.addEventListener('change', calculateAndDisplaySpeeds);
     finalDriveInput.addEventListener('change', calculateAndDisplaySpeeds);
-    tireSizeInput.addEventListener('blur', calculateAndDisplaySpeeds); // Use blur instead of change for text input often
+    tireSizeInput.addEventListener('blur', calculateAndDisplaySpeeds); // Recalc when user leaves the field
 
     // Trigger calculation on Enter key press in numeric/text input fields
     [finalDriveInput, tireSizeInput].forEach(input => {
         input.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 calculateAndDisplaySpeeds();
-                e.preventDefault();
+                e.preventDefault(); // Prevent default Enter key behavior (like form submission)
             }
         });
     });
-
-    // Initial calculation on load using default values (done by updateUnitSystem)
-    // calculateAndDisplaySpeeds(); // No longer needed here as updateUnitSystem calls it.
 });
