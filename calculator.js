@@ -67,7 +67,7 @@ const MM_PER_INCH = 25.4;
 const INCHES_PER_MILE = 63360;
 const MM_PER_KM = 1000000;
 const RPM_START = 1000;
-const RPM_END = 8000; // Adjust max RPM if needed
+const RPM_END = 6500; // Adjust max RPM if needed
 const RPM_STEP = 500;
 
 // --- DOM Elements ---
