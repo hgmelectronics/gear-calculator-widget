@@ -1,7 +1,6 @@
 // --- Transmission Data ---
 // NOTE: Accuracy varies, always verify for specific vehicle/year. Data gathered from online sources & training data.
 const transmissions = {
-
     // --- Added Automatics ---
     "Aisin AW TF-80SC (Common 6-spd Auto FWD, e.g., Volvo, Ford)": [4.148, 2.370, 1.556, 1.155, 0.859, 0.686], // Example ratios, check application
     "Aisin AW TG-81SC (Common 8-spd Auto FWD/AWD, e.g., Volvo, BMW Mini)": [5.250, 3.029, 1.950, 1.457, 1.221, 1.000, 0.809, 0.673], // Example ratios
@@ -67,7 +66,7 @@ const MM_PER_INCH = 25.4;
 const INCHES_PER_MILE = 63360;
 const MM_PER_KM = 1000000;
 const RPM_START = 1000;
-const RPM_END = 6500; // Adjust max RPM if needed
+const RPM_END = 7000; // Adjust max RPM if needed
 const RPM_STEP = 500;
 
 // --- DOM Elements ---
@@ -79,8 +78,9 @@ const resultsTableHead = resultsTable.querySelector('thead');
 const resultsTableBody = resultsTable.querySelector('tbody');
 const tireInfoDisplay = document.getElementById('tireInfo');
 const errorMessageDisplay = document.getElementById('errorMessage');
-const unitSystemRadios = document.querySelectorAll('input[name="unitSystem"]');
+const unitSelect = document.getElementById('unitSelect'); // Reference the select dropdown
 const speedUnitLabel = document.getElementById('speedUnitLabel');
+const driveshaftTurnsDisplay = document.getElementById('driveshaftTurnsInfo'); // Reference for driveshaft turns output
 
 // --- Global State ---
 let currentUnitSystem = 'imperial';
@@ -88,11 +88,10 @@ let currentUnitSystem = 'imperial';
 // --- Functions ---
 
 function populateTransmissionDropdown() {
-    // Clear existing options except the placeholder
+    // Clears existing options (except placeholder) and populates with sorted keys from transmissions object.
     while (transmissionSelect.options.length > 1) {
         transmissionSelect.remove(1);
     }
-    // Sort keys alphabetically for consistent order
     const sortedKeys = Object.keys(transmissions).sort();
     sortedKeys.forEach(key => {
         const option = document.createElement('option');
@@ -103,7 +102,7 @@ function populateTransmissionDropdown() {
 }
 
 function parseTireSize(tireString) {
-    // Parses tire size string (e.g., "225/60R16") into components.
+    // Parses standard tire size string (e.g., "225/60R16") into components.
     const match = tireString.match(/^P?(\d{3})\/?(\d{2})\s?R(\d{2})$/i);
     if (match) {
         return {
@@ -116,11 +115,11 @@ function parseTireSize(tireString) {
 }
 
 function calculateTireDimensions(tireComponents) {
-    // Calculates tire diameter and circumference in both inches and mm.
+    // Calculates tire diameter and circumference in both inches and mm from parsed components.
     if (!tireComponents) return null;
     const { width, aspectRatio, rimDiameter } = tireComponents;
     // Basic validation for tire component values
-    if (isNaN(width) || isNaN(aspectRatio) || isNaN(rimDiameter) || width <= 0 || aspectRatio < 0 || rimDiameter <= 0) { // Aspect ratio can be 0 in theory, but not negative
+    if (isNaN(width) || isNaN(aspectRatio) || isNaN(rimDiameter) || width <= 0 || aspectRatio < 0 || rimDiameter <= 0) {
       console.error("Invalid tire component values:", tireComponents);
       return null;
     }
@@ -132,110 +131,151 @@ function calculateTireDimensions(tireComponents) {
     const diameterInches = (sidewallHeightInches * 2) + rimDiameter;
     const circumferenceInches = diameterInches * Math.PI;
 
-    // Check if calculations resulted in valid numbers
-    if (isNaN(diameterInches) || isNaN(circumferenceInches) || isNaN(diameterMm) || isNaN(circumferenceMm) ||
-        !isFinite(diameterInches) || !isFinite(circumferenceInches) || !isFinite(diameterMm) || !isFinite(circumferenceMm)) {
-        console.error("Tire dimension calculation resulted in NaN or Infinity:", {diameterInches, circumferenceInches, diameterMm, circumferenceMm});
+    // Check if calculations resulted in valid, positive, finite numbers
+    if (isNaN(diameterInches) || !isFinite(diameterInches) || diameterInches <= 0 ||
+        isNaN(circumferenceInches) || !isFinite(circumferenceInches) || circumferenceInches <= 0 ||
+        isNaN(diameterMm) || !isFinite(diameterMm) || diameterMm <= 0 ||
+        isNaN(circumferenceMm) || !isFinite(circumferenceMm) || circumferenceMm <= 0) {
+        console.error("Tire dimension calculation resulted in invalid value:", {diameterInches, circumferenceInches, diameterMm, circumferenceMm});
         return null;
     }
     return { diameterInches, circumferenceInches, diameterMm, circumferenceMm };
 }
 
 function updateUnitSystem() {
-    // Updates the unit system state and triggers recalculation.
-    const selectedRadio = document.querySelector('input[name="unitSystem"]:checked');
-    if (selectedRadio) {
-        currentUnitSystem = selectedRadio.value;
-        calculateAndDisplaySpeeds();
-    }
+    // Updates the global unit system state based on the select dropdown and triggers recalculation.
+    currentUnitSystem = unitSelect.value; // Read value directly from select
+    calculateAndDisplaySpeeds(); // Trigger recalculation
 }
 
 function calculateAndDisplaySpeeds() {
-    // Main function to perform calculations and update the results table.
+    // Main function: validates inputs, calculates results, and updates the UI.
 
-    // --- Clear previous state ---
+    // --- 1. Clear previous output state ---
     resultsTableHead.innerHTML = '';
     resultsTableBody.innerHTML = '';
     tireInfoDisplay.textContent = '';
     errorMessageDisplay.textContent = '';
-    speedUnitLabel.textContent = currentUnitSystem === 'metric' ? 'KPH' : 'MPH';
+    driveshaftTurnsDisplay.textContent = ''; // Clear driveshaft info
+    speedUnitLabel.textContent = currentUnitSystem === 'metric' ? 'KPH' : 'MPH'; // Update speed unit label
 
-    // --- Get current input values ---
+    // --- 2. Get current input values ---
     const selectedTransmissionName = transmissionSelect.value;
     const finalDriveRatio = parseFloat(finalDriveInput.value);
     const tireSizeStr = tireSizeInput.value;
 
-    // --- Validate inputs ---
+    // --- 3. Validate core inputs (Final Drive, Tire Size) ---
     let errorMessages = [];
-    if (!selectedTransmissionName) errorMessages.push("Please select a transmission.");
+    let isFinalDriveValid = false;
     if (isNaN(finalDriveRatio) || finalDriveRatio <= 0 || !isFinite(finalDriveRatio)) {
          errorMessages.push("Invalid Final Drive Ratio.");
-    }
-    const tireComponents = parseTireSize(tireSizeStr);
-    if (!tireComponents) {
-        errorMessages.push("Invalid Tire Size format (e.g., 225/60R16).");
+    } else {
+         isFinalDriveValid = true; // Mark final drive as valid for later calcs
     }
 
-    // --- Calculate Tire Dimensions (only if components are valid) ---
+    const tireComponents = parseTireSize(tireSizeStr);
+    if (!tireComponents) {
+        if (!errorMessages.includes("Invalid Tire Size format (e.g., 225/60R16).")) {
+             errorMessages.push("Invalid Tire Size format (e.g., 225/60R16).");
+        }
+    }
+
+    // --- 4. Calculate & Display Tire Dimensions (if possible) ---
     let tireDimensions = null;
-    if (tireComponents) {
+    let areTireDimensionsValid = false;
+    if (tireComponents) { // Only proceed if tire size string was parsed successfully
         tireDimensions = calculateTireDimensions(tireComponents);
         if (!tireDimensions) {
-            errorMessages.push("Invalid tire dimensions resulted from calculation.");
+             if (!errorMessages.includes("Invalid tire dimensions resulted from calculation.")) {
+                errorMessages.push("Invalid tire dimensions resulted from calculation.");
+             }
         } else {
-            // Display tire dimensions
+            areTireDimensionsValid = true; // Mark dimensions as valid
+            // Display tire dimensions info
             if (currentUnitSystem === 'metric') {
                 tireInfoDisplay.textContent = `Tire Diameter: ${tireDimensions.diameterMm.toFixed(1)} mm, Circumference: ${tireDimensions.circumferenceMm.toFixed(1)} mm.`;
             } else {
                 tireInfoDisplay.textContent = `Tire Diameter: ${tireDimensions.diameterInches.toFixed(2)} inches, Circumference: ${tireDimensions.circumferenceInches.toFixed(2)} inches.`;
             }
         }
-    } // If !tireComponents, the parsing error is already added
-
-    // --- Get Gear Ratios ---
-    const gearRatios = transmissions[selectedTransmissionName];
-    if (!gearRatios || gearRatios.length === 0) {
-        if (selectedTransmissionName) { // Only add error if selected trans is bad
-            errorMessages.push("Selected transmission data is missing or invalid.");
-        }
-        // Display errors gathered so far and stop, preventing table build if no gears
-        errorMessageDisplay.textContent = errorMessages.join(' ');
-        return;
     }
 
-    // --- Display errors and stop if any validation failed before table build ---
+    // --- 5. Calculate & Display Driveshaft Turns per Mile/KM (if possible) --- <<< RESTORED BLOCK >>>
+    if (isFinalDriveValid && areTireDimensionsValid) { // Requires valid FD and tire dimensions
+        try {
+            let turnsResultText = '';
+            if (currentUnitSystem === 'metric') {
+                const turnsPerKm = (MM_PER_KM / tireDimensions.circumferenceMm) * finalDriveRatio;
+                if(!isNaN(turnsPerKm) && isFinite(turnsPerKm)){
+                   turnsResultText = `Driveshaft Turns per Kilometer: ${turnsPerKm.toFixed(0)}`;
+                } else { throw new Error("Metric turns calculation invalid"); }
+            } else { // Imperial
+                const turnsPerMile = (INCHES_PER_MILE / tireDimensions.circumferenceInches) * finalDriveRatio;
+                 if(!isNaN(turnsPerMile) && isFinite(turnsPerMile)){
+                    turnsResultText = `Driveshaft Turns per Mile: ${turnsPerMile.toFixed(0)}`;
+                 } else { throw new Error("Imperial turns calculation invalid"); }
+            }
+            driveshaftTurnsDisplay.textContent = turnsResultText; // Update display
+        } catch (e) {
+            console.error("Error calculating driveshaft turns:", e);
+             if (!errorMessages.includes("Could not calculate driveshaft turns.")) {
+                errorMessages.push("Could not calculate driveshaft turns.");
+             }
+            driveshaftTurnsDisplay.textContent = ''; // Ensure clear on error
+        }
+    }
+    // <<< END RESTORED BLOCK >>>
+
+
+    // --- 6. Validate Transmission Selection ---
+    const gearRatios = transmissions[selectedTransmissionName];
+    if (!selectedTransmissionName) {
+         if (!errorMessages.includes("Please select a transmission.")){
+            errorMessages.push("Please select a transmission.");
+         }
+    } else if (!gearRatios || gearRatios.length === 0) {
+         if (!errorMessages.includes("Selected transmission data is missing or invalid.")){
+            errorMessages.push("Selected transmission data is missing or invalid.");
+         }
+    }
+
+    // --- 7. Display Errors and Stop if any validation failed ---
+    // Checks all accumulated errors before attempting table build
     if (errorMessages.length > 0) {
         errorMessageDisplay.textContent = errorMessages.join(' ');
-        return; // Stop if inputs are invalid
+        // Clear potentially partially built headers if errors occurred late
+        resultsTableHead.innerHTML = '';
+        resultsTableBody.innerHTML = '';
+        return; // Stop processing
     }
 
-    // --- Build Table Header (thead) ---
+    // --- 8. Build Table Header (thead) ---
+    // Assumes all necessary inputs (FD, Tire, Trans) are valid if we reached here
     const headerRow = resultsTableHead.insertRow();
-    headerRow.insertCell().outerHTML = '<th>Gear</th>';    // First column header
-    headerRow.insertCell().outerHTML = '<th>Ratio</th>';   // Second column header
-    // Add RPM steps as subsequent column headers
-    for (let rpm = RPM_START; rpm <= RPM_END; rpm += RPM_STEP) {
+    headerRow.insertCell().outerHTML = '<th>Gear</th>';    // Col 1
+    headerRow.insertCell().outerHTML = '<th>Ratio</th>';   // Col 2
+    for (let rpm = RPM_START; rpm <= RPM_END; rpm += RPM_STEP) { // Col 3+
         headerRow.insertCell().outerHTML = `<th>${rpm} RPM</th>`;
     }
 
-    // --- Build Table Body (tbody) ---
-    // Outer loop iterates through GEARS
+    // --- 9. Build Table Body (tbody) ---
     gearRatios.forEach((gearRatio, gearIndex) => {
         const bodyRow = resultsTableBody.insertRow();
-        bodyRow.insertCell().textContent = `${gearIndex + 1}`; // Gear number cell (Col 1)
+        // Col 1: Gear Number
+        bodyRow.insertCell().textContent = `${gearIndex + 1}`;
 
-        // Add Gear Ratio cell (Col 2)
+        // Col 2: Gear Ratio
         const ratioCell = bodyRow.insertCell();
-        ratioCell.textContent = (gearRatio > 0 && isFinite(gearRatio)) ? gearRatio.toFixed(3) + ":1" : '-';
+        ratioCell.textContent = (gearRatio > 0 && isFinite(gearRatio)) ? gearRatio.toFixed(3) : '-';
 
-        // Inner loop iterates through RPMs for this gear (Col 3+)
+        // Col 3+: Speeds for each RPM step
         for (let currentRpm = RPM_START; currentRpm <= RPM_END; currentRpm += RPM_STEP) {
             const speedCell = bodyRow.insertCell();
 
-            // Check for valid inputs needed for speed calculation *inside the loop*
-            if (gearRatio <= 0 || !isFinite(gearRatio) || finalDriveRatio <= 0 || !isFinite(finalDriveRatio) || !tireDimensions) {
+            // Final check for valid calculation inputs for this specific cell
+            if (gearRatio <= 0 || !isFinite(gearRatio) || !isFinalDriveValid || !areTireDimensionsValid) {
                 speedCell.textContent = '-';
-                speedCell.style.textAlign = 'center'; // Center placeholder
+                speedCell.style.textAlign = 'center';
             } else {
                 const wheelRpm = currentRpm / gearRatio / finalDriveRatio;
                 let displaySpeed;
@@ -249,29 +289,30 @@ function calculateAndDisplaySpeeds() {
                     // Ensure result is a valid number before formatting
                     displaySpeed = (isNaN(speedMph) || !isFinite(speedMph)) ? '-' : speedMph.toFixed(1);
                 }
-                // Center if calculation resulted in placeholder '-'
+
                 if(displaySpeed === '-'){
                    speedCell.style.textAlign = 'center';
                  }
                 speedCell.textContent = displaySpeed;
             }
-        } // End RPM loop
-    }); // End Gear loop
+        } // End RPM loop for columns
+    }); // End Gear loop for rows
 }
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    populateTransmissionDropdown(); // Fill the dropdown first
-    updateUnitSystem(); // Set initial units and perform initial calculation
+    // This code runs once the HTML document is fully loaded and parsed.
+    populateTransmissionDropdown(); // Fill the dropdown list
 
-    // Add event listeners to recalculate automatically on changes
-    unitSystemRadios.forEach(radio => radio.addEventListener('change', updateUnitSystem));
+    // Attach listener to the unit select dropdown
+    unitSelect.addEventListener('change', updateUnitSystem);
+
+    // Other listeners for automatic recalculation
     transmissionSelect.addEventListener('change', calculateAndDisplaySpeeds);
     finalDriveInput.addEventListener('change', calculateAndDisplaySpeeds);
-    // Using 'input' recalculates as you type, 'blur' recalculates when leaving the field. 'Blur' is less resource intensive.
-    tireSizeInput.addEventListener('blur', calculateAndDisplaySpeeds);
+    tireSizeInput.addEventListener('blur', calculateAndDisplaySpeeds); // Recalc when user leaves the field
 
-    // Optional: Recalculate on Enter key press in text/number fields for quicker updates
+    // Optional: Recalculate on Enter key press in text/number fields
     [finalDriveInput, tireSizeInput].forEach(input => {
         input.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
@@ -280,4 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Perform initial calculation based on default values
+    updateUnitSystem(); // Reads initial value from the select element and triggers calculation
 });

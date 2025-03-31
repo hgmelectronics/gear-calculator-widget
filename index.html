@@ -9,15 +9,11 @@
   <body>
     <div class="input-section">
       <div class="unit-selector">
-        <label>Units:</label>
-        <label>
-          <input type="radio" name="unitSystem" value="imperial" checked />
-          Imperial (MPH, inches)
-        </label>
-        <label>
-          <input type="radio" name="unitSystem" value="metric" /> Metric (KPH,
-          mm)
-        </label>
+        <label for="unitSelect">Units:</label>
+        <select id="unitSelect" name="unitSystem">
+          <option value="imperial" selected>Imperial (MPH, inches)</option>
+          <option value="metric">Metric (KPH, mm)</option>
+        </select>
       </div>
 
       <label for="transmissionSelect">Transmission:</label>
@@ -43,6 +39,7 @@
         pattern="\d{3}/\d{2}R\d{2}"
         title="Tire size should be in the format WWW/AA R DD (e.g., 225/60R16)"
       />
+      <p id="driveshaftTurnsInfo"></p>
     </div>
 
     <div class="output-section">

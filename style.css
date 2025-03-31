@@ -43,36 +43,40 @@ select {
     box-sizing: border-box; /* Include padding in width calculation */
 }
 
-/* Button styles removed */
-/*
-button { ... }
-button:hover { ... }
-*/
+/* ... (Keep styles above .unit-selector) ... */
 
 .unit-selector {
     margin-bottom: 10px;
     padding-bottom: 8px;
     border-bottom: 1px solid #eee;
+    /* Optional: Adjust alignment if label and select look off */
+    /* display: flex; align-items: center; */
 }
 
 .unit-selector label {
-    display: inline-block;
+    /* This still applies to the <label for="unitSelect"> */
+    /* display: inline-block; <- Remove if using flexbox above */
     margin-right: 10px;
-    font-weight: normal;
+    font-weight: bold; /* Make "Units:" bold */
     font-size: 0.9em;
+    /* Optional: Adjust vertical alignment if needed */
+    /* vertical-align: middle; */
 }
 
-.unit-selector label:first-of-type {
-     font-weight: bold;
-     margin-right: 5px;
-}
+/* Remove styles for radio buttons */
+/*
+.unit-selector label:first-of-type { ... }
+.unit-selector input[type="radio"] { ... }
+*/
 
-.unit-selector input[type="radio"] {
-    margin-right: 4px;
-    vertical-align: middle;
+/* Ensure general select style is sufficient, or add specific style */
+#unitSelect {
+    /* Inherits from general select styles, adjust if needed */
+    /* width: auto; */ /* Example */
+    /* padding: 6px; */
+    font-size: 0.9em;
+    vertical-align: middle; /* Align with label */
 }
-
-/* ... (Keep styles above #resultsTable the same) ... */
 
 #resultsTable {
     width: 100%;
@@ -111,6 +115,15 @@ button:hover { ... }
     font-size: 0.85em;
     margin-top: 5px;
     margin-bottom: 10px;
+}
+
+/* Optional styling for the new driveshaft turns info */
+#driveshaftTurnsInfo {
+    font-size: 0.9em;
+    color: #222; /* Slightly darker */
+    margin-top: 5px;
+    margin-bottom: 15px; /* Add some space before table */
+    font-weight: bold;
 }
 
 .error {
