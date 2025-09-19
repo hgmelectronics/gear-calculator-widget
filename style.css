@@ -1,46 +1,41 @@
+/* --- General Styles --- */
 body {
     font-family: sans-serif;
     line-height: 1.6;
     margin: 20px;
-    background-color: #fff; /* Ensure background for iframe */
+    background-color: #fff;
     color: #333;
 }
 
-h1, h2 {
-    text-align: center;
-    color: #333;
-}
-
-h2 {
-    font-size: 1.2em; /* Slightly smaller H2 for widget context */
-}
-
+/* --- Layout --- */
 .input-section {
     background-color: #f4f4f4;
-    padding: 15px; /* Slightly reduced padding */
+    padding: 15px;
     margin-bottom: 15px;
     border-radius: 5px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-label {
+/* --- Forms --- */
+label,
+.input-section h3 {
     display: block;
-    margin-top: 8px; /* Reduced margin */
+    margin-top: 8px;
     margin-bottom: 4px;
     font-weight: bold;
-    font-size: 0.9em; /* Slightly smaller labels */
+    font-size: 0.9em;
 }
 
 input[type="number"],
 input[type="text"],
 select {
-    width: 95%; /* Adjust as needed, consider padding */
-    padding: 6px; /* Reduced padding */
+    width: 95%;
+    padding: 6px;
     margin-bottom: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 0.9em;
-    box-sizing: border-box; /* Include padding in width calculation */
+    box-sizing: border-box;
 }
 
 input[readonly] {
@@ -56,8 +51,6 @@ input[readonly] {
 
 .unit-selector label {
     margin-right: 10px;
-    font-weight: bold;
-    font-size: 0.9em;
 }
 
 #unitSelect {
@@ -65,6 +58,7 @@ input[readonly] {
     vertical-align: middle;
 }
 
+/* --- Tables --- */
 .results-table {
     width: auto;
     border-collapse: collapse;
@@ -73,7 +67,8 @@ input[readonly] {
     font-size: 0.85em;
 }
 
-.results-table th, .results-table td {
+.results-table th, 
+.results-table td {
     border: 1px solid #ddd;
     padding: 5px;
     text-align: center;
@@ -86,10 +81,11 @@ input[readonly] {
     font-weight: bold;
 }
 
-#resultsTable td:first-child { /* Keep RPM column bold */
+#resultsTable td:first-child {
     font-weight: bold;
 }
 
+/* --- Error Messages --- */
 .error {
     color: red;
     font-weight: bold;
