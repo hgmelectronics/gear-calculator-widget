@@ -9,19 +9,19 @@
   <body>
     <div class="input-section">
       <div class="unit-selector">
-        <label for="unitSelect">Units:</label>
+        <label for="unitSelect">Units</label>
         <select id="unitSelect" name="unitSystem">
           <option value="imperial" selected>Imperial (MPH, inches)</option>
           <option value="metric">Metric (KPH, mm)</option>
         </select>
       </div>
 
-      <label for="transmissionSelect">Transmission:</label>
+      <label for="transmissionSelect">Transmission</label>
       <select id="transmissionSelect">
         <option value="">-- Select Transmission --</option>
       </select>
 
-      <label for="finalDrive">Final Drive Ratio:</label>
+      <label for="finalDrive">Final Drive Ratio</label>
       <input
         type="number"
         id="finalDrive"
@@ -30,7 +30,7 @@
         min="0.01"
       />
 
-      <label for="tireSize">Tire Size (e.g., 225/60R16):</label>
+      <label for="tireSize">Tire Size (e.g., 225/60R16)</label>
       <input
         type="text"
         id="tireSize"
@@ -39,16 +39,26 @@
         pattern="\d{3}/\d{2}R\d{2}"
         title="Tire size should be in the format WWW/AA R DD (e.g., 225/60R16)"
       />
-      <p id="driveshaftTurnsInfo"></p>
-    </div>
 
-    <div class="output-section">
-      <p id="tireInfo"></p>
-      <table id="resultsTable">
-        <caption>
-          Vehicle Speed (<span id="speedUnitLabel">MPH</span
-          >)
-        </caption>
+      <label for="displayTireDiameter">Tire Diameter</label>
+      <input type="number" id="displayTireDiameter" step="0.01" min="0.01" />
+
+      <label for="displayTireCircumference">Tire Circumference</label>
+      <input type="text" id="displayTireCircumference" readonly />
+
+      <label for="displayDriveshaftTurns">Driveshaft Turns</label>
+      <input type="text" id="displayDriveshaftTurns" readonly />
+
+      <label id="gearRatioTableCaption">Gear Ratios</label>
+      <table id="gearRatioTable" class="results-table">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+
+      <label id="resultsTableCaption">
+        Vehicle Speed (<span id="speedUnitLabel">MPH</span>)
+      </label>
+      <table id="resultsTable" class="results-table">
         <thead></thead>
         <tbody></tbody>
       </table>

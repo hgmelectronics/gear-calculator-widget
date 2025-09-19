@@ -15,7 +15,7 @@ h2 {
     font-size: 1.2em; /* Slightly smaller H2 for widget context */
 }
 
-.input-section, .output-section {
+.input-section {
     background-color: #f4f4f4;
     padding: 15px; /* Slightly reduced padding */
     margin-bottom: 15px;
@@ -43,93 +43,50 @@ select {
     box-sizing: border-box; /* Include padding in width calculation */
 }
 
-/* ... (Keep styles above .unit-selector) ... */
+input[readonly] {
+    background-color: #eee;
+    cursor: default;
+}
 
 .unit-selector {
     margin-bottom: 10px;
     padding-bottom: 8px;
     border-bottom: 1px solid #eee;
-    /* Optional: Adjust alignment if label and select look off */
-    /* display: flex; align-items: center; */
 }
 
 .unit-selector label {
-    /* This still applies to the <label for="unitSelect"> */
-    /* display: inline-block; <- Remove if using flexbox above */
     margin-right: 10px;
-    font-weight: bold; /* Make "Units:" bold */
-    font-size: 0.9em;
-    /* Optional: Adjust vertical alignment if needed */
-    /* vertical-align: middle; */
-}
-
-/* Remove styles for radio buttons */
-/*
-.unit-selector label:first-of-type { ... }
-.unit-selector input[type="radio"] { ... }
-*/
-
-/* Ensure general select style is sufficient, or add specific style */
-#unitSelect {
-    /* Inherits from general select styles, adjust if needed */
-    /* width: auto; */ /* Example */
-    /* padding: 6px; */
-    font-size: 0.9em;
-    vertical-align: middle; /* Align with label */
-}
-
-#resultsTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 0.85em; /* Smaller font for table data */
-}
-
-#resultsTable caption {
     font-weight: bold;
-    margin-bottom: 5px;
-    color: #333;
-    font-size: 1.1em;
+    font-size: 0.9em;
 }
 
-#resultsTable th, #resultsTable td {
+#unitSelect {
+    font-size: 0.9em;
+    vertical-align: middle;
+}
+
+.results-table {
+    width: auto;
+    border-collapse: collapse;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 0.85em;
+}
+
+.results-table th, .results-table td {
     border: 1px solid #ddd;
-    padding: 5px; /* Reduced padding */
-    /* Make center the default alignment for data cells */
+    padding: 5px;
     text-align: center;
-    white-space: nowrap; /* Prevent wrapping */
-    vertical-align: middle; /* Good practice for table cells */
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
-#resultsTable th { /* Header specific styles */
+.results-table th {
     background-color: #e9e9e9;
     font-weight: bold;
-    /* text-align: center; <- Covered by the general rule above */
 }
 
-#resultsTable td:first-child { /* RPM column specific styles */
-    /* text-align: center; <- Covered by the general rule above */
-    font-weight: bold; /* Keep RPM bold */
-}
-
-/* No need for td:not(:first-child) if center is default */
-
-/* ... (Keep styles below #resultsTable the same) ... */
-
-#tireInfo {
-    font-style: italic;
-    color: #555;
-    font-size: 0.85em;
-    margin-top: 5px;
-    margin-bottom: 10px;
-}
-
-/* Optional styling for the new driveshaft turns info */
-#driveshaftTurnsInfo {
-    font-size: 0.9em;
-    color: #222; /* Slightly darker */
-    margin-top: 5px;
-    margin-bottom: 15px; /* Add some space before table */
+#resultsTable td:first-child { /* Keep RPM column bold */
     font-weight: bold;
 }
 
