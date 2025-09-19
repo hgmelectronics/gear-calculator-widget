@@ -5,7 +5,7 @@ const INCHES_PER_MILE = 63360;
 const MM_PER_KM = 1000000;
 const RPM_START = 500;
 const RPM_END = 7000; // Adjust max RPM if needed
-const RPM_STEP = 100;
+const RPM_STEP = 250;
 
 // --- DOM Elements ---
 const transmissionSelect = document.getElementById('transmissionSelect');
