@@ -26,8 +26,6 @@
 
 /* --- General Styles --- */
 body {
-    font-family: sans-serif;
-    line-height: 1.6;
     margin: 20px;
     background-color: var(--background-color);
     color: var(--text-color);
