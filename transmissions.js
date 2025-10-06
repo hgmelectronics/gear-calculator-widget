@@ -2,9 +2,23 @@ const transmissions = {
     // --- Added Automatics ---
     "Aisin AW TF-80SC (Common 6-spd Auto FWD, e.g., Volvo, Ford)": [4.148, 2.370, 1.556, 1.155, 0.859, 0.686], // Example ratios, check application
     "Aisin AW TG-81SC (Common 8-spd Auto FWD/AWD, e.g., Volvo, BMW Mini)": [5.250, 3.029, 1.950, 1.457, 1.221, 1.000, 0.809, 0.673], // Example ratios
-    "Chrysler NAG1 / W5A580 (5-spd Auto, e.g., Charger, 300, GC WK)": [3.59, 2.19, 1.41, 1.00, 0.83], // Mercedes 722.6 design
+    "Aisin AW4 / Jeep ('87-'90, e.g., Cherokee XJ, Comanche MJ)": [2.80, 1.53, 1.00, 0.75],
+    "Aisin AW4 / Jeep ('91-'01, e.g., Cherokee XJ, Comanche MJ)": [2.80, 1.53, 1.00, 0.705],
+    "Chrysler 45RFE (4-spd Auto, e.g., Grand Cherokee WJ, Dakota)": [3.00, 1.67, 1.00, 0.75], // Has alternate 1.50 2nd gear for kick-down
+    "Chrysler 518 / A518 / 46RE (4-spd Auto, e.g., Ram, Dakota, Durango)": [2.45, 1.45, 1.00, 0.69],
+    "Chrysler 545RFE (5-spd Auto, e.g., Ram 1500, Grand Cherokee WK)": [3.00, 1.67, 1.00, 0.75, 0.67],
+    "Chrysler 65RFE / 66RFE (6-spd Auto, e.g., Ram 1500/2500 Hemi)": [3.00, 1.67, 1.50, 1.00, 0.75, 0.67],
+    "Chrysler 68RFE (6-spd Auto HD, e.g., Ram 2500/3500 Cummins)": [3.23, 1.84, 1.41, 1.00, 0.82, 0.63],
+    "Chrysler A618 / 47RE (4-spd Auto HD, e.g., Ram 2500/3500 Cummins)": [2.45, 1.45, 1.00, 0.69],
+    "Ford AODE (4-spd Auto, e.g., Mustang, Crown Victoria '92-'95)": [2.40, 1.47, 1.00, 0.67],
+    "Ford E4OD (4-spd Auto HD, e.g., F-Series, Bronco '89-'98)": [2.71, 1.54, 1.00, 0.71],
+    "Ford 4R100 (4-spd Auto HD, e.g., F-250/350 Super Duty, Excursion)": [2.71, 1.54, 1.00, 0.71],
+    "Ford 4R70W (4-spd Auto, e.g., F-150, Mustang, Crown Victoria)": [2.84, 1.55, 1.00, 0.70],
     "Ford 6R80 (6-spd Auto RWD, e.g., F-150, Mustang V6/EcoBoost)": [4.17, 2.34, 1.52, 1.14, 0.87, 0.69],
     "Ford 10R80 (10-spd Auto RWD, e.g., F-150, Mustang GT)": [4.696, 2.985, 2.146, 1.769, 1.520, 1.275, 1.000, 0.854, 0.689, 0.636],
+    "GM TH350 (3-spd Auto, Classic RWD)": [2.52, 1.52, 1.00],
+    "GM TH400 (3-spd Auto HD, Classic RWD)": [2.48, 1.48, 1.00],
+    "GM 700R4 / 4L60 (4-spd Auto, e.g., C4 Corvette, Camaro/Firebird '82-'92)": [3.06, 1.63, 1.00, 0.70],
     "GM 4L60E (4-spd Auto, e.g., Silverado 1500, Tahoe, Camaro '94+)": [3.059, 1.625, 1.000, 0.696], // Very common, slight ratio variations exist
     "GM 4L80E (4-spd Auto HD, e.g., Silverado 2500/3500, Express)": [2.482, 1.482, 1.000, 0.750],
     "GM 6L80 (6-spd Auto RWD/4WD, e.g., Silverado, Tahoe)": [4.03, 2.36, 1.53, 1.15, 0.85, 0.67],
@@ -13,6 +27,10 @@ const transmissions = {
     "Honda B7XA/M7XA (4-spd Auto, e.g., Accord '98-'02)": [2.651, 1.516, 1.037, 0.738],
     "Honda BAYA/MAYA (5-spd Auto, e.g., Accord '03-'07 V6)": [2.697, 1.606, 1.071, 0.766, 0.566],
     "Mazda SkyActiv-Drive (6-spd Auto, Various)": [3.552, 2.022, 1.452, 1.000, 0.708, 0.599],
+    "Mercedes 722.3 / 722.4 (4-spd Auto, e.g., W124, W126, W201)": [3.68, 2.41, 1.44, 1.00],
+    "Mercedes 722.5 (5-spd Auto, e.g., W140, R129)": [3.87, 2.25, 1.44, 1.00, 0.75],
+    "Mercedes 722.6 / 5G-Tronic (W5A330, e.g., Sprinter 2500, some C/E-Class)": [3.951, 2.423, 1.486, 1.000, 0.833],
+    "Mercedes 722.6 / 5G-Tronic (W5A580/NAG1, e.g., Chrysler V8, AMG models)": [3.59, 2.19, 1.41, 1.00, 0.83],
     "Mercedes 7G-Tronic (722.9 Auto, Various RWD)": [4.38, 2.86, 1.92, 1.37, 1.00, 0.82, 0.73],
     "Mercedes 9G-Tronic (725.0 Auto, Various RWD/AWD)": [5.50, 3.33, 2.31, 1.66, 1.21, 1.00, 0.86, 0.71, 0.60],
     "Nissan RE4R01A / RE4R03A (4-spd Auto RWD/4WD, e.g., 300ZX, Pathfinder)": [2.785, 1.545, 1.000, 0.694], // Jatco JR401E/JR403E
@@ -23,7 +41,13 @@ const transmissions = {
     "Toyota A750E/F (5-spd Auto, e.g., 4Runner, Tacoma, LC 100 V8)": [3.520, 2.042, 1.400, 1.000, 0.716],
     "Toyota AB60E/F (6-spd Auto, e.g., Tundra, Sequoia, LC 200)": [3.333, 1.960, 1.353, 1.000, 0.728, 0.588],
     "Toyota AE80F (8-spd Auto, e.g. Toyota Land Cruiser 300)": [4.795, 2.811, 1.844, 1.429, 1.213, 1.000, 0.817, 0.672],
-    "ZF 8HP70 Auto (Various, e.g., Ram 1500)": [4.71, 3.14, 2.10, 1.67, 1.29, 1.00, 0.84, 0.67], // Common variant, others exist
+    "ZF 4HP22 (4-spd Auto, e.g., BMW E30/E34, Land Rover Discovery)": [2.48, 1.48, 1.00, 0.73],
+    "ZF 4HP24 (4-spd Auto HD, e.g., BMW V8/V12, Range Rover)": [2.48, 1.48, 1.00, 0.73],
+    "ZF 5HP30 (5-spd Auto, e.g., BMW E38 740i, E39 540i)": [3.56, 2.20, 1.51, 1.00, 0.79],
+    "ZF 6HP26 (6-spd Auto, e.g., BMW E60/E65, Jaguar XJ, Ford Falcon)": [4.17, 2.34, 1.52, 1.14, 0.87, 0.69],
+    "ZF 8HP (Wide Ratio, e.g., BMW 3-series, Ram 1500, Charger)": [4.714, 3.143, 2.106, 1.667, 1.285, 1.000, 0.839, 0.667],
+    "ZF 8HP (Close Ratio, e.g., BMW M3/M4, Alfa Romeo Giulia QV)": [5.000, 3.200, 2.143, 1.720, 1.313, 1.000, 0.823, 0.640],
+    "ZF 8HP (Sport Ratio, e.g., Toyota Supra A90, BMW M340i)": [5.250, 3.360, 2.172, 1.720, 1.316, 1.000, 0.822, 0.640],
 
     // --- Added Manuals ---
     "Getrag 233 (BMW E36 325i/328i Manual)": [4.23, 2.52, 1.66, 1.22, 1.00],
