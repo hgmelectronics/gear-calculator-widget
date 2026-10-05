@@ -20,6 +20,7 @@
       <select id="transmissionSelect">
         <option value="">-- Select Transmission --</option>
       </select>
+      <p id="selectPrompt">Select a transmission to see speeds.</p>
 
       <label for="finalDrive">Final Drive Ratio</label>
       <input
@@ -30,40 +31,68 @@
         min="0.01"
       />
 
-      <label for="tireSize">Tire Size (e.g., 225/60R16)</label>
+      <label for="transferCase">Transfer Case Ratio</label>
+      <input
+        type="number"
+        id="transferCase"
+        value="1.00"
+        step="0.01"
+        min="0.01"
+      />
+
+      <label for="tireSize">Tire Size</label>
       <input
         type="text"
         id="tireSize"
+        spellcheck="false"
+        autocorrect="off"
+        autocapitalize="off"
         value="225/60R16"
-        placeholder="WWW/AA R DD"
-        pattern="\d{3}/\d{2}R\d{2}"
-        title="Tire size should be in the format WWW/AA R DD (e.g., 225/60R16)"
+        placeholder="225/60R16 or 33x12.50R15"
+        title="Enter a metric tire size (225/60R16, LT265/75R16) or a flotation size (33x12.50R15). A bare number is the diameter in inches."
+      />
+      <div id="unloadedDiameterHint" class="hint"></div>
+
+      <label for="rollingDiameter">Rolling Diameter</label>
+      <input
+        type="number"
+        id="rollingDiameter"
+        step="0.01"
+        min="0.01"
+        title="Measured rolling (loaded) diameter in the selected units. Leave empty to use the unloaded diameter from Tire Size."
       />
 
-      <label for="displayTireDiameter">Tire Diameter</label>
-      <input type="number" id="displayTireDiameter" step="0.01" min="0.01" />
-
-      <label for="displayTireCircumference">Tire Circumference</label>
-      <input type="text" id="displayTireCircumference" readonly />
-
-      <label for="displayDriveshaftTurns">Driveshaft Turns</label>
-      <input type="text" id="displayDriveshaftTurns" readonly />
+      <dl class="readouts">
+        <dt>Tire Diameter</dt>
+        <dd><output id="displayTireDiameter"></output></dd>
+        <dt>Tire Circumference</dt>
+        <dd><output id="displayTireCircumference"></output></dd>
+        <dt>Driveshaft Turns</dt>
+        <dd><output id="displayDriveshaftTurns"></output></dd>
+        <dt>Transmission Output Turns</dt>
+        <dd><output id="displayOutputTurns"></output></dd>
+      </dl>
 
       <h3 id="gearRatioTableCaption">Gear Ratios</h3>
-      <table id="gearRatioTable" class="results-table">
-        <thead></thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-scroll">
+        <table id="gearRatioTable" class="results-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
       <h3 id="resultsTableCaption">
         Vehicle Speed (<span id="speedUnitLabel">MPH</span>)
       </h3>
-      <table id="resultsTable" class="results-table">
-        <thead></thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-scroll">
+        <table id="resultsTable" class="results-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
       <p id="errorMessage" class="error"></p>
     </div>
+    <script src="gearmath.js"></script>
     <script src="transmissions.js"></script>
     <script src="calculator.js"></script>
   </body>

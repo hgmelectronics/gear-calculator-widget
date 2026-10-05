@@ -7,6 +7,7 @@
     --table-header-background-color: #e9e9e9;
     --readonly-background-color: #eee;
     --error-text-color: red;
+    --invalid-border-color: red;
     --shadow-color: rgba(0,0,0,0.1);
 }
 
@@ -20,6 +21,7 @@
         --table-header-background-color: #333;
         --readonly-background-color: #2a2a2a;
         --error-text-color: #ff6b6b;
+        --invalid-border-color: #ff6b6b;
         --shadow-color: rgba(255,255,255,0.1);
     }
 }
@@ -65,6 +67,17 @@ select {
     color: var(--text-color);
 }
 
+input[aria-invalid="true"] {
+    border-color: var(--invalid-border-color);
+    box-shadow: 0 0 0 1px var(--invalid-border-color);
+}
+
+.hint {
+    margin-top: -4px;
+    margin-bottom: 8px;
+    font-size: 0.85em;
+}
+
 input[readonly] {
     background-color: var(--readonly-background-color);
     cursor: default;
@@ -85,18 +98,46 @@ input[readonly] {
     vertical-align: middle;
 }
 
+/* --- Readouts: compact label and value lines --- */
+.readouts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 4px 12px;
+    margin: 8px 0 12px;
+    font-size: 0.9em;
+}
+
+.readouts dt {
+    font-weight: bold;
+}
+
+.readouts dd {
+    margin: 0;
+}
+
 /* --- Tables --- */
-.results-table {
-    width: auto;
-    border-collapse: collapse;
+/* Each table scrolls sideways in its own box, so a wide table never widens the page */
+.table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
     margin-top: 5px;
     margin-bottom: 20px;
+}
+
+/* Separate borders, drawn right and bottom only, so sticky cells keep their borders while scrolling */
+.results-table {
+    width: auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-top: 1px solid var(--table-border-color);
+    border-left: 1px solid var(--table-border-color);
     font-size: 0.85em;
 }
 
-.results-table th, 
+.results-table th,
 .results-table td {
-    border: 1px solid var(--table-border-color);
+    border-right: 1px solid var(--table-border-color);
+    border-bottom: 1px solid var(--table-border-color);
     padding: 5px;
     text-align: center;
     white-space: nowrap;
@@ -110,6 +151,29 @@ input[readonly] {
 
 #resultsTable td:first-child {
     font-weight: bold;
+}
+
+/* The first column (RPM, Ratio) stays in place while the gears scroll sideways */
+.results-table th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+}
+
+/* --- Narrow screens --- */
+@media (max-width: 600px) {
+    body {
+        margin: 8px;
+    }
+
+    .input-section {
+        padding: 10px;
+    }
+
+    .results-table th,
+    .results-table td {
+        padding: 4px 3px;
+    }
 }
 
 /* --- Error Messages --- */
